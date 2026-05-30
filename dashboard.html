@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Dashboard">
+<title>Min Dashboard</title>
+<style>
+:root{
+  --blue:#2563EB;--blue-l:#EFF6FF;--blue-d:#1E3A8A;
+  --green:#16A34A;--green-l:#F0FDF4;--green-d:#14532D;
+  --amber:#D97706;--amber-l:#FFFBEB;--amber-d:#78350F;
+  --red:#DC2626;--red-l:#FEF2F2;--red-d:#7F1D1D;
+  --purple:#7C3AED;--purple-l:#F5F3FF;--purple-d:#4C1D95;
+  --teal:#0D9488;--teal-l:#F0FDFA;--teal-d:#134E4A;
+  --bg:#F8F9FB;--card:#FFFFFF;--card2:#F1F5F9;
+  --text:#0F172A;--text2:#475569;--text3:#94A3B8;
+  --border:#E2E8F0;
+  --r:16px;--r2:12px;--r3:8px;
+  --st:env(safe-area-inset-top,44px);--sb:env(safe-area-inset-bottom,0px);
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#0A0F1E;--card:#111827;--card2:#1F2937;
+    --text:#F1F5F9;--text2:#94A3B8;--text3:#475569;
+    --border:#1F2937;
+    --blue-l:#1E3A5F;--green-l:#14312A;--amber-l:#2D1F0A;
+    --red-l:#2D1010;--purple-l:#1F1240;--teal-l:#0D2926;
+    --blue-d:#93C5FD;--green-d:#86EFAC;--amber-d:#FCD34D;
+    --red-d:#FCA5A5;--purple-d:#C4B5FD;--teal-d:#99F6E4;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{height:100%}body{height:100dvh;max-height:100dvh;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column}
+button,input,textarea,select{font-family:inherit;border:none;outline:none;background:none}
+button{cursor:pointer}
+input,textarea,select{background:var(--card2);border:1.5px solid var(--border);border-radius:var(--r3);color:var(--text);font-size:15px;padding:10px 12px;width:100%}
+input:focus,textarea:focus,select:focus{border-color:var(--blue)}
+select option{background:var(--card)}
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;min-height:0}
+.scroll::-webkit-scrollbar{display:none}
+.page{display:none;min-height:100dvh;flex-direction:column}
+.page.on{display:flex}
+.safe-top{height:var(--st);background:var(--card);flex-shrink:0}
+
+/* HEADER */
+.hdr{background:var(--card);padding:14px 20px 12px;border-bottom:1px solid var(--border);flex-shrink:0}
+.hdr-row{display:flex;align-items:center;justify-content:space-between}
+.hdr-title{font-size:22px;font-weight:800;letter-spacing:-.5px}
+.hdr-sub{font-size:13px;color:var(--text3);margin-top:2px}
+.hdr-pill{font-size:12px;font-weight:700;padding:5px 12px;border-radius:20px}
+.back-btn{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700;color:var(--blue);padding:6px 12px;background:var(--blue-l);border-radius:20px;border:none;cursor:pointer}
+
+/* NAV */
+.tab-bar{background:var(--card);border-top:1px solid var(--border);display:flex;padding-bottom:var(--sb);flex-shrink:0;z-index:50}
+.tb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 0 6px;color:var(--text3);font-size:9px;font-weight:600;gap:2px;transition:color .15s}
+.tb.on{color:var(--blue)}
+.tb svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* CARDS */
+.card{background:var(--card);border-radius:var(--r);border:1px solid var(--border);overflow:hidden}
+.ch{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.ct{font-size:15px;font-weight:700}
+.cb{padding:14px 16px}
+.sec{padding:0 16px;margin-top:16px}
+.sec-t{font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+
+/* HERO GRADIENT CARDS */
+.hero-card{border-radius:20px;padding:20px;color:#fff;position:relative;overflow:hidden;margin:14px 16px 0}
+.hero-card::before{content:'';position:absolute;top:-30px;right:-20px;width:120px;height:120px;background:rgba(255,255,255,.07);border-radius:50%}
+.hc-ey{font-size:11px;font-weight:700;opacity:.7;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.hc-val{font-size:32px;font-weight:900;letter-spacing:-1px;line-height:1}
+.hc-sub{font-size:13px;opacity:.75;margin-top:4px}
+
+/* STAT GRID */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px;margin-top:12px}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:14px}
+.sv{font-size:26px;font-weight:800;letter-spacing:-.5px;line-height:1}
+.sl{font-size:12px;color:var(--text3);margin-top:4px;font-weight:500}
+.chip{display:inline-flex;align-items:center;margin-top:6px;font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px}
+.c-g{background:var(--green-l);color:var(--green-d)}
+.c-a{background:var(--amber-l);color:var(--amber-d)}
+.c-b{background:var(--blue-l);color:var(--blue-d)}
+.c-r{background:var(--red-l);color:var(--red-d)}
+.c-p{background:var(--purple-l);color:var(--purple-d)}
+@media(prefers-color-scheme:dark){.c-g{color:var(--green-d)}.c-a{color:var(--amber-d)}.c-b{color:var(--blue-d)}.c-r{color:var(--red-d)}.c-p{color:var(--purple-d)}}
+
+/* BADGE */
+.badge{display:inline-flex;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px}
+.b-g{background:var(--green-l);color:var(--green-d)}
+.b-b{background:var(--blue-l);color:var(--blue-d)}
+.b-a{background:var(--amber-l);color:var(--amber-d)}
+.b-r{background:var(--red-l);color:var(--red-d)}
+.b-p{background:var(--purple-l);color:var(--purple-d)}
+.b-t{background:var(--teal-l);color:var(--teal-d)}
+@media(prefers-color-scheme:dark){.b-g{color:var(--green-d)}.b-b{color:var(--blue-d)}.b-a{color:var(--amber-d)}.b-r{color:var(--red-d)}.b-p{color:var(--purple-d)}.b-t{color:var(--teal-d)}}
+
+/* PROGRESS BAR */
+.prog-wrap{margin-top:10px}
+.prog-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.prog-lbl{font-size:12px;font-weight:600;color:var(--text2);flex:1}
+.prog-bg{flex:2;height:8px;background:var(--card2);border-radius:4px;overflow:hidden}
+.prog-fill{height:100%;border-radius:4px;transition:width .6s cubic-bezier(.34,1.56,.64,1)}
+.prog-pct{font-size:12px;font-weight:700;color:var(--text3);min-width:36px;text-align:right}
+
+/* SHEET */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;opacity:0;pointer-events:none;transition:opacity .25s}
+.overlay.open{opacity:1;pointer-events:all}
+.sheet{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-radius:24px 24px 0 0;z-index:201;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,0,.67,0);max-height:90vh;display:flex;flex-direction:column;padding-bottom:var(--sb)}
+.sheet.open{transform:translateY(0);transition:transform .35s cubic-bezier(.34,1.56,.64,1)}
+.sh-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0;flex-shrink:0}
+.sh-hdr{padding:14px 20px 12px;border-bottom:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
+.sh-title{font-size:18px;font-weight:800}
+.sh-close{width:44px;height:44px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--text2);font-weight:700;border:1.5px solid var(--border)}
+.sh-scroll{overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1;padding:16px 20px}
+.sh-scroll::-webkit-scrollbar{display:none}
+
+/* FORM */
+.form-field{margin-bottom:14px}
+.form-lbl{font-size:12px;font-weight:700;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;display:block}
+.form-row{display:flex;gap:8px;align-items:center}
+.form-inp{flex:1;padding:11px 14px;background:var(--card2);border:1.5px solid var(--border);border-radius:var(--r3);font-size:15px;color:var(--text)}
+.form-inp:focus{border-color:var(--blue)}
+.form-unit{font-size:13px;font-weight:600;color:var(--text3);min-width:28px}
+.save-btn{width:100%;padding:15px;background:var(--blue);color:#fff;border-radius:var(--r2);font-size:16px;font-weight:800;margin-top:4px}
+.save-btn:active{opacity:.85}
+.del-btn{padding:8px 14px;background:var(--red-l);color:var(--red-d);border-radius:var(--r3);font-size:13px;font-weight:700;border:1px solid var(--red)}
+
+/* LIST ROWS */
+.list-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.list-row:last-child{border:none}
+.lr-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.lr-main{flex:1}
+.lr-title{font-size:14px;font-weight:700;color:var(--text)}
+.lr-sub{font-size:12px;color:var(--text2);margin-top:1px}
+.lr-right{text-align:right}
+.lr-val{font-size:15px;font-weight:800;color:var(--text)}
+.lr-sub2{font-size:11px;color:var(--text3);margin-top:1px}
+
+/* TOAST */
+.toast{position:fixed;bottom:calc(80px + var(--sb) + 8px);left:50%;transform:translateX(-50%) translateY(16px);background:var(--text);color:var(--bg);padding:11px 22px;border-radius:25px;font-size:14px;font-weight:700;opacity:0;transition:all .25s;z-index:999;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* SEG */
+.seg{display:flex;background:var(--card2);border-radius:var(--r3);padding:3px;margin:12px 16px 0}
+.sg{flex:1;padding:8px;font-size:13px;font-weight:700;border-radius:7px;background:transparent;color:var(--text3);text-align:center}
+.sg.on{background:var(--card);color:var(--text)}
+
+/* TASK */
+.task-row{display:flex;align-items:start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.task-row:last-child{border:none}
+.task-check{width:22px;height:22px;border-radius:6px;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-top:1px}
+.task-check.done{background:var(--green);border-color:var(--green)}
+.task-txt{flex:1;font-size:14px;font-weight:500;color:var(--text);line-height:1.4}
+.task-txt.done{text-decoration:line-through;color:var(--text3)}
+.task-pri{font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px}
+
+/* CHART */
+.chart-w{display:flex;gap:4px;align-items:flex-end;height:80px}
+.chart-b{flex:1;border-radius:4px 4px 0 0;min-height:4px}
+.chart-ls{display:flex;gap:4px;margin-top:4px}
+.chart-l{flex:1;font-size:9px;font-weight:600;color:var(--text3);text-align:center}
+
+/* FOTBALL STYLES */
+.wk-row{display:flex;gap:5px;padding:0 16px;margin-top:10px}
+.wk-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}
+.wk-ring{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;border:2.5px solid var(--border)}
+.wr-full{background:var(--green);border-color:var(--green);color:#fff}
+.wr-alt{background:var(--amber);border-color:var(--amber);color:#fff}
+.wr-skip{background:var(--red-l);border-color:var(--red);color:var(--red)}
+.wr-today{border-color:var(--blue);color:var(--blue);background:var(--blue-l)}
+.wr-empty{color:var(--text3)}
+.wk-lbl{font-size:10px;font-weight:600;color:var(--text3)}
+.day-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px 16px 0}
+.dtile{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:12px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;min-height:88px;justify-content:center;position:relative}
+.dtile:active{transform:scale(.94)}
+.dtile.active{border-color:var(--blue);background:var(--blue-l)}
+.dtile.done-f{border-color:var(--green);background:var(--green-l)}
+.dtile.done-a{border-color:var(--amber);background:var(--amber-l)}
+.dt-icon{font-size:20px;line-height:1}
+.dt-n{font-size:11px;font-weight:800;color:var(--text2);text-transform:uppercase;letter-spacing:.05em}
+.dt-l{font-size:10px;font-weight:500;color:var(--text3);text-align:center;line-height:1.3}
+.ptoggle{display:flex;background:var(--card2);border-radius:var(--r2);padding:3px;margin:12px 16px 0}
+.pt{flex:1;padding:8px;font-size:13px;font-weight:700;border-radius:10px;background:transparent;color:var(--text3);text-align:center}
+.pt.on{background:var(--card);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.12)}
+.alt-pair{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.abox{border-radius:10px;padding:10px 12px;border-left:3px solid}
+.a-m{background:var(--green-l);border-color:var(--green)}
+.am-l{font-size:10px;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:.06em}
+.am-t{font-size:12px;color:var(--green-d);margin-top:2px;line-height:1.35}
+.a-a{background:var(--amber-l);border-color:var(--amber)}
+.aa-l{font-size:10px;font-weight:800;color:var(--amber);text-transform:uppercase;letter-spacing:.06em}
+.aa-t{font-size:12px;color:var(--amber-d);margin-top:2px;line-height:1.35}
+@media(prefers-color-scheme:dark){.am-t{color:var(--green-d)}.aa-t{color:var(--amber-d)}}
+.sh-checkin{display:flex;gap:8px;padding:12px 20px;border-top:1px solid var(--border);flex-shrink:0}
+.sh-cb{flex:1;padding:11px 0;border-radius:12px;font-size:14px;font-weight:700;text-align:center}
+.sh-cb-f{background:var(--blue);color:#fff}
+.sh-cb-f.done{background:var(--green);color:#fff}
+.sh-cb-a{background:var(--amber-l);color:var(--amber-d);border:1.5px solid var(--amber)}
+.sh-cb-a.done{background:var(--amber);color:#fff}
+.sec-lbl{font-size:11px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;padding:14px 0 6px}
+.ex-block{padding:12px 0;border-bottom:1px solid var(--border)}
+.ex-block:last-child{border:none}
+.exb-top{display:flex;align-items:start;justify-content:space-between;gap:10px}
+.exb-name{font-size:14px;font-weight:800;color:var(--text);flex:1}
+.exb-sets{font-size:13px;font-weight:800;color:var(--blue);white-space:nowrap}
+.exb-tip{font-size:13px;color:var(--text2);margin-top:6px;line-height:1.5;background:var(--card2);border-radius:8px;padding:8px 10px}
+.exb-why{font-size:12px;color:var(--blue);margin-top:4px;font-weight:600;line-height:1.4}
+.wb{background:var(--card2);border-radius:var(--r2);padding:12px;margin-top:4px}
+.wb-title{font-size:11px;font-weight:800;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
+.wb-row{display:flex;align-items:center;gap:10px;padding:4px 0}
+.wb-num{width:20px;height:20px;border-radius:50%;background:var(--blue);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.wb-name{font-size:13px;font-weight:700;color:var(--text);flex:1}
+.wb-sets{font-size:12px;font-weight:700;color:var(--blue)}
+.empty{text-align:center;padding:28px 16px}
+.ei{font-size:36px;margin-bottom:8px}
+.et{font-size:14px;font-weight:600;color:var(--text3)}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<div class="overlay" id="overlay" onclick="closeSheet()"></div>
+<div class="sheet" id="sheet">
+  <div class="sh-handle"></div>
+  <div class="sh-hdr"><div class="sh-title" id="sh-title"></div><button onclick="closeSheet()" style="background:var(--card2);border:1.5px solid var(--border);border-radius:12px;padding:8px 18px;font-size:15px;font-weight:800;color:var(--text2)">✕ Lukk</button></div>
+  <div class="sh-scroll" id="sh-body"></div>
+
+  <div id="sh-footer"></div>
+</div>
+
+<!-- ======== HOME ======== -->
+<div class="page on" id="p-home">
+  <div class="safe-top"></div>
+  <div class="hdr">
+    <div class="hdr-row">
+      <div><div class="hdr-title" id="home-title">Hei 👋</div><div class="hdr-sub" id="home-date"></div></div>
+      <div class="hdr-pill b-b" id="home-streak"></div>
+    </div>
+  </div>
+  <div class="scroll">
+    <div id="home-kamp-banner"></div>
+    <div id="home-hero"></div>
+    <div class="stat-grid" id="home-stats"></div>
+    <div class="sec" style="margin-bottom:24px" id="home-quick"></div>
+  </div>
+</div>
+
+<!-- ======== FOTBALL ======== -->
+<div class="page" id="p-fotball">
+  <div class="safe-top"></div>
+  <div class="hdr">
+    <div class="hdr-row">
+      <div style="display:flex;align-items:center;gap:10px"><button class="back-btn" onclick="navTo('home')">← Hjem</button><div><div class="hdr-title">Fotball</div><div class="hdr-sub">Blåmann FK</div></div></div>
+      <div class="hdr-pill" id="fb-pill" style="background:var(--blue-l);color:var(--blue)">Sesong</div>
+    </div>
+  </div>
+  <div class="scroll">
+    <div class="hero-card" id="fb-hero" style="background:linear-gradient(135deg,#1B4FD8,#3B82F6)">
+      <div class="hc-ey" id="fb-ey"></div>
+      <div class="hc-val" id="fb-title"></div>
+      <div class="hc-sub" id="fb-sub"></div>
+      <div style="display:flex;gap:8px;margin-top:14px">
+        <button style="flex:1;padding:10px;border-radius:12px;font-size:14px;font-weight:700;background:#fff;color:#2563EB" id="fb-btn-full" onclick="fbCheckIn('full')">Full økt ✓</button>
+        <button style="flex:1;padding:10px;border-radius:12px;font-size:14px;font-weight:700;background:rgba(255,255,255,.2);color:#fff;border:1.5px solid rgba(255,255,255,.4)" id="fb-btn-alt" onclick="fbCheckIn('alt')">Alternativ ✓</button>
+        <button style="padding:10px 14px;border-radius:12px;font-size:14px;font-weight:700;background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:1.5px solid rgba(255,255,255,.15)" onclick="fbCheckIn('skip')">Skip</button>
+      </div>
+    </div>
+    <div class="sec"><div class="sec-t">Denne uken</div><div class="wk-row" id="fb-week-row"></div></div>
+    <div class="stat-grid" id="fb-stats"></div>
+    <div style="padding:14px 16px 0"><div class="ptoggle">
+      <button class="pt on" id="fb-ps" onclick="setFbPhase('sesong')">Sesong</button>
+      <button class="pt" id="fb-pg" onclick="setFbPhase('grind')">Sommergrindet</button>
+    </div></div>
+    <div class="day-grid" id="fb-day-grid"></div>
+    <div style="padding:8px 16px 4px;text-align:center;font-size:12px;color:var(--text3)">Trykk en dag for fullstendig program</div>
+    <div style="height:24px"></div>
+  </div>
+</div>
+
+<!-- ======== ØKONOMI ======== -->
+<div class="page" id="p-okono">
+  <div class="safe-top"></div>
+  <div class="hdr">
+    <div class="hdr-row">
+      <div style="display:flex;align-items:center;gap:10px"><button class="back-btn" onclick="navTo('home')">← Hjem</button><div><div class="hdr-title">Økonomi</div><div class="hdr-sub" id="ok-period"></div></div></div>
+      <button onclick="openSheet('legg-til-jobb')" style="background:var(--blue);color:#fff;padding:7px 14px;border-radius:20px;font-size:13px;font-weight:700">+ Logg dag</button>
+    </div>
+  </div>
+  <div class="scroll">
+    <!-- INNTEKT HERO -->
+    <div class="hero-card" style="background:linear-gradient(135deg,#16A34A,#22C55E)">
+      <div class="hc-ey">Tjent denne måneden (brutto)</div>
+      <div class="hc-val" id="ok-brutto">0 kr</div>
+      <div class="hc-sub" id="ok-netto-sub">Netto etter skatt: 0 kr</div>
+    </div>
+    <div class="stat-grid">
+      <div class="sc">
+        <div class="sv" id="ok-timer">0</div>
+        <div class="sl">Timer denne måneden</div>
+        <div class="chip c-b" id="ok-timer-chip"></div>
+      </div>
+      <div class="sc">
+        <div class="sv" id="ok-neste">0 kr</div>
+        <div class="sl">Utbetaling 12. neste mnd</div>
+        <div class="chip c-g">Etter skatt</div>
+      </div>
+    </div>
+    <!-- SKATT INFO -->
+    <div class="sec"><div class="sec-t">Skatteberegning</div>
+    <div class="card"><div class="cb" id="ok-skatt-info"></div></div></div>
+    <!-- JOBBLOGG -->
+    <div class="sec"><div class="sec-t" style="display:flex;justify-content:space-between;align-items:center">
+      <span>Jobbdager denne måneden</span>
+      <button onclick="openSheet('legg-til-jobb')" style="font-size:12px;color:var(--blue);font-weight:700">+ Legg til</button>
+    </div>
+    <div class="card"><div class="cb" id="ok-jobb-liste"></div></div></div>
+    <!-- FOND -->
+    <div class="sec"><div class="sec-t" style="display:flex;justify-content:space-between;align-items:center">
+      <span>Fond og sparing</span>
+      <button onclick="openSheet('legg-til-fond')" style="font-size:12px;color:var(--blue);font-weight:700">+ Oppdater</button>
+    </div>
+    <div class="card"><div class="cb" id="ok-fond"></div></div></div>
+    <!-- SPAREMÅL -->
+    <div class="sec"><div class="sec-t" style="display:flex;justify-content:space-between;align-items:center">
+      <span>Sparemål</span>
+      <button onclick="openSheet('legg-til-sparemal')" style="font-size:12px;color:var(--blue);font-weight:700">+ Nytt mål</button>
+    </div>
+    <div class="card"><div class="cb" id="ok-sparemal"></div></div></div>
+    <!-- UTGIFTER -->
+    <div class="sec"><div class="sec-t" style="display:flex;justify-content:space-between;align-items:center">
+      <span>Faste utgifter</span>
+      <button onclick="openSheet('legg-til-utgift')" style="font-size:12px;color:var(--blue);font-weight:700">+ Legg til</button>
+    </div>
+    <div class="card"><div class="cb" id="ok-utgifter"></div></div></div>
+    <!-- MÅNEDSOVERSIKT -->
+    <div class="sec"><div class="sec-t">Inntekt siste måneder</div>
+    <div class="card"><div class="cb">
+      <div class="chart-w" id="ok-chart"></div>
+      <div class="chart-ls" id="ok-chart-ls"></div>
+    </div></div></div>
+    <div style="height:24px"></div>
+  </div>
+</div>
+
+<!-- ======== GOLF PROSJEKT ======== -->
+<div class="page" id="p-golf">
+  <div class="safe-top"></div>
+  <div class="hdr">
+    <div class="hdr-row">
+      <div><div class="hdr-title">Caddy-Daddy 🏌️</div><div class="hdr-sub">MVP-fremgang</div></div>
+      <div class="hdr-pill b-p">Pågår</div>
+    </div>
+  </div>
+  <div class="scroll">
+    <!-- FREMGANG HERO -->
+    <div class="hero-card" style="background:linear-gradient(135deg,#7C3AED,#A855F7)">
+      <div class="hc-ey">Prosjektfremgang</div>
+      <div class="hc-val" id="golf-pct">0%</div>
+      <div class="hc-sub" id="golf-sub">0 av 0 oppgaver fullført</div>
+    </div>
+    <div class="stat-grid">
+      <div class="sc">
+        <div class="sv" id="golf-done">0</div>
+        <div class="sl">Oppgaver fullført</div>
+        <div class="chip c-g" id="golf-done-chip"></div>
+      </div>
+      <div class="sc">
+        <div class="sv" id="golf-left">0</div>
+        <div class="sl">Gjenstår</div>
+        <div class="chip c-a" id="golf-left-chip"></div>
+      </div>
+    </div>
+    <!-- MOTIVASJON -->
+    <div class="sec">
+      <div class="card" style="background:linear-gradient(135deg,var(--purple-l),var(--blue-l));border-color:var(--purple-d)">
+        <div class="cb">
+          <div style="font-size:20px;margin-bottom:8px">🔥</div>
+          <div style="font-size:15px;font-weight:800;color:var(--purple-d)" id="golf-motivasjon"></div>
+          <div style="font-size:13px;color:var(--text2);margin-top:4px;line-height:1.5" id="golf-motivasjon-sub"></div>
+        </div>
+      </div>
+    </div>
+    <!-- FASER -->
+    <div class="sec"><div class="sec-t">Prosjektfaser</div>
+    <div class="card"><div class="cb" id="golf-faser"></div></div></div>
+    <!-- OPPGAVER -->
+    <div class="sec"><div class="sec-t" style="display:flex;justify-content:space-between;align-items:center">
+      <span>Oppgaver</span>
+      <button onclick="openSheet('legg-til-task')" style="font-size:12px;color:var(--purple);font-weight:700">+ Ny oppgave</button>
+    </div>
+    <div class="seg"><button class="sg on" onclick="setTaskTab('aktiv',this)">Aktive</button><button class="sg" onclick="setTaskTab('fullfort',this)">Fullført</button></div>
+    <div style="padding:0 16px;margin-top:10px"><div class="card"><div class="cb" id="golf-tasks"></div></div></div></div>
+    <!-- NOTATER -->
+    <div class="sec"><div class="sec-t" style="display:flex;justify-content:space-between;align-items:center">
+      <span>Notater og ideer</span>
+      <button onclick="openSheet('legg-til-notat')" style="font-size:12px;color:var(--purple);font-weight:700">+ Ny notat</button>
+    </div>
+    <div style="padding:0 16px;margin-top:10px"><div class="card"><div class="cb" id="golf-notater"></div></div></div></div>
+    <div style="height:24px"></div>
+  </div>
+</div>
+
+
+<!-- ======== HISTORIKK ======== -->
+<div class="page" id="p-historikk">
+  <div class="safe-top"></div>
+  <div class="hdr">
+    <div class="hdr-row">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="back-btn" onclick="navTo('home')">← Hjem</button>
+        <div><div class="hdr-title">Historikk</div><div class="hdr-sub">Alle dager og hendelser</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll">
+    <div class="seg" style="margin-top:14px">
+      <button class="sg on" onclick="setHistTab('dag',this)">Dagbok</button>
+      <button class="sg" onclick="setHistTab('okono',this)">Økonomi</button>
+      <button class="sg" onclick="setHistTab('fotball',this)">Fotball</button>
+    </div>
+
+    <!-- DAGBOK -->
+    <div id="ht-dag">
+      <div style="padding:14px 16px 0">
+        <div class="card" style="background:linear-gradient(135deg,var(--blue-l),var(--purple-l));border-color:var(--blue)">
+          <div class="cb">
+            <div style="font-size:14px;font-weight:700;margin-bottom:10px">✍️ Skriv i dagboken</div>
+            <div class="form-field">
+              <label class="form-lbl">Dato</label>
+              <input class="form-inp" type="date" id="dag-dato">
+            </div>
+            <div class="form-field">
+              <label class="form-lbl">Kategori</label>
+              <select class="form-inp" id="dag-kat">
+                <option value="penger-bra">💰 Bra pengevalg</option>
+                <option value="penger-dårlig">😬 Kastet bort penger</option>
+                <option value="fond">📈 La inn i fond</option>
+                <option value="trening">💪 God treningsdag</option>
+                <option value="fotball">⚽ Fotball-notat</option>
+                <option value="golf">🏌️ Golf-prosjekt</option>
+                <option value="generelt">📝 Generelt</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label class="form-lbl">Hva skjedde?</label>
+              <textarea class="form-inp" id="dag-txt" style="min-height:80px;resize:none" placeholder="Beskriv dagen, hva du gjorde, hva du brukte/sparte, hvordan du hadde det..."></textarea>
+            </div>
+            <div class="form-field" id="dag-belop-wrap" style="display:none">
+              <label class="form-lbl">Beløp</label>
+              <div class="form-row">
+                <input class="form-inp" type="number" id="dag-belop" placeholder="0">
+                <span style="font-size:13px;font-weight:600;color:var(--text3);min-width:24px">kr</span>
+              </div>
+            </div>
+            <button class="save-btn" onclick="saveDagbok()">Lagre i dagboken</button>
+          </div>
+        </div>
+      </div>
+      <div style="padding:14px 16px 0"><div class="sec-t">Tidligere innlegg</div>
+      <div class="card"><div class="cb" id="dag-liste"></div></div></div>
+      <div style="height:24px"></div>
+    </div>
+
+    <!-- ØKONOMI HISTORIKK -->
+    <div id="ht-okono" style="display:none">
+      <div style="padding:14px 16px 0"><div class="sec-t">Alle jobbdager</div>
+      <div class="card"><div class="cb" id="hist-jobb-alle"></div></div></div>
+      <div style="padding:14px 16px 0"><div class="sec-t">Månedlig inntekt</div>
+      <div class="card"><div class="cb" id="hist-mnd-inntekt"></div></div></div>
+      <div style="height:24px"></div>
+    </div>
+
+    <!-- FOTBALL HISTORIKK -->
+    <div id="ht-fotball" style="display:none">
+      <div style="padding:14px 16px 0"><div class="sec-t">Alle avkryssede dager</div>
+      <div class="card"><div class="cb" id="hist-fb-alle"></div></div></div>
+      <div style="padding:14px 16px 0"><div class="sec-t">Konsistens per måned</div>
+      <div class="card"><div class="cb" id="hist-fb-mnd"></div></div></div>
+      <div style="height:24px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="tab-bar">
+  <button class="tb on" id="tab-home" onclick="navTo('home')">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Hjem
+  </button>
+  <button class="tb" id="tab-fotball" onclick="navTo('fotball')">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20"/><path d="M2 12h20"/></svg>Fotball
+  </button>
+  <button class="tb" id="tab-okono" onclick="navTo('okono')">
+    <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Økonomi
+  </button>
+  <button class="tb" id="tab-golf" onclick="navTo('golf')">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="18" r="3"/><path d="M12 15V5"/><path d="M12 5l4 3"/></svg>Prosjekt
+  </button>
+  <button class="tb" id="tab-historikk" onclick="navTo('historikk')">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Logg
+  </button>
+</div>
+
+<script>
+// ===================== STORAGE =====================
+function ld(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch{return d;}}
+function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
+
+let D = ld('dashboard_v1',{
+  // fotball
+  fb_checkins:{}, fb_phase:'sesong',
+  // økonomi
+  ok_jobber:[], ok_fond:[], ok_sparemal:[], ok_utgifter:[], ok_historikk:{},
+  // golf prosjekt
+  golf_tasks:[], golf_notater:[], golf_fase:0,
+});
+function saveD(){sv('dashboard_v1',D);}
+
+// ===================== CONSTANTS =====================
+const TIMELONN = 205;
+const SKATT_PCT = 9;
+const PENSJON_PCT = 2;
+const FERIE_PCT = 10.2;
+const KAMP_DATES = ['2026-05-28','2026-06-04','2026-06-11','2026-08-10','2026-08-18','2026-08-28','2026-09-03','2026-09-12','2026-09-17'];
+
+const GOLF_FASER = [
+  {n:'Design',icon:'🎨',status:'done',desc:'UI/UX ferdig'},
+  {n:'Auth & brukere',icon:'🔐',status:'current',desc:'Innlogging og brukerregistrering'},
+  {n:'Hukommelse',icon:'🧠',status:'current',desc:'Lagring av brukerdata'},
+  {n:'AI-integrasjon',icon:'🤖',status:'todo',desc:'Koble til AI-modell'},
+  {n:'MVP',icon:'🚀',status:'todo',desc:'Første versjon klar'},
+  {n:'Outreach & content',icon:'📣',status:'todo',desc:'B2B og sosiale medier'},
+];
+
+const DEFAULT_TASKS = [
+  {id:1,txt:'Fiks innlogging og brukerregistrering',pri:'high',done:false},
+  {id:2,txt:'Implementer brukerhukommelse/database',pri:'high',done:false},
+  {id:3,txt:'Koble til AI-modell (caddie-logikk)',pri:'high',done:false},
+  {id:4,txt:'Test MVP med 3-5 golfspisllere',pri:'med',done:false},
+  {id:5,txt:'Lag kort demo-video for outreach',pri:'med',done:false},
+  {id:6,txt:'Kontakt 2 lokale golfklubber for B2B',pri:'low',done:false},
+];
+if(!D.golf_tasks.length) D.golf_tasks=[...DEFAULT_TASKS];
+
+// ===================== HELPERS =====================
+function todayStr(){return new Date().toISOString().slice(0,10);}
+function dowIdx(){const d=new Date().getDay();return d===0?6:d-1;}
+function fmtKr(n){return Math.round(n).toLocaleString('nb-NO')+' kr';}
+function fmtDate(iso){return new Date(iso+'T12:00').toLocaleDateString('nb-NO',{day:'numeric',month:'short'});}
+function weekStart(off=0){const d=new Date(),day=d.getDay(),diff=d.getDate()-day+(day===0?-6:1)+off*7;return new Date(new Date(d).setDate(diff)).toISOString().slice(0,10);}
+function currentMonthKey(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;}
+function prevMonthKey(){const d=new Date();d.setMonth(d.getMonth()-1);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;}
+
+function nettoCalc(brutto){
+  const skatt=brutto*SKATT_PCT/100;
+  const pensjon=brutto*PENSJON_PCT/100;
+  return brutto-skatt-pensjon;
+}
+
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+
+// ===================== NAV =====================
+function navTo(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('p-'+id).classList.add('on');
+  document.getElementById('tab-'+id).classList.add('on');
+  if(id==='home')renderHome();
+  if(id==='fotball')renderFotball();
+  if(id==='okono')renderOkono();
+  if(id==='golf')renderGolf();
+  if(id==='historikk')renderHistorikk();
+}
+
+// ===================== SHEET =====================
+let activeSheet='';
+function openSheet(type, data=null){
+  activeSheet=type;
+  const titles={
+    'legg-til-jobb':'Logg arbeidsdag',
+    'legg-til-fond':'Fond og sparing',
+    'legg-til-sparemal':'Nytt sparemål',
+    'legg-til-utgift':'Fast utgift',
+    'legg-til-task':'Ny oppgave',
+    'legg-til-notat':'Nytt notat',
+    'fb-dag':'Dagens økt',
+  };
+  document.getElementById('sh-title').textContent=titles[type]||type;
+  document.getElementById('sh-body').innerHTML=buildSheetBody(type,data);
+  document.getElementById('sh-footer').innerHTML='<div style="padding:12px 20px;border-top:1px solid var(--border)"><button onclick="closeSheet()" style="width:100%;padding:14px;background:var(--card2);border:1.5px solid var(--border2);border-radius:var(--r2);font-size:16px;font-weight:800;color:var(--text2)">← Tilbake</button></div>';
+  if(type==='fb-dag'&&data!==null) buildFbDagSheet(data);
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('sheet').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeSheet(){
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('sheet').classList.remove('open');
+  document.body.style.overflow='';
+  renderHome();
+  if(document.getElementById('p-okono').classList.contains('on')) renderOkono();
+  if(document.getElementById('p-golf').classList.contains('on')) renderGolf();
+  if(document.getElementById('p-fotball').classList.contains('on')) renderFotball();
+}
+
+function buildSheetBody(type, data){
+  if(type==='legg-til-jobb') return `
+    <div class="form-field"><label class="form-lbl">Dato</label><input class="form-inp" type="date" id="jobb-dato" value="${todayStr()}"></div>
+    <div class="form-field"><label class="form-lbl">Timer jobbet</label><div class="form-row"><input class="form-inp" type="number" id="jobb-timer" placeholder="7.5" step="0.5"><span class="form-unit">t</span></div></div>
+    <div class="form-field"><label class="form-lbl">Beskrivelse (valgfritt)</label><input class="form-inp" type="text" id="jobb-desc" placeholder="Vikartimer 5.trinn"></div>
+    <div style="background:var(--green-l);border-radius:var(--r3);padding:10px 12px;font-size:13px;color:var(--green-d);margin-bottom:14px" id="jobb-preview"></div>
+    <button class="save-btn" onclick="saveJobb()">Legg til dag 💰</button>`;
+  if(type==='legg-til-fond') return `
+    <div class="form-field"><label class="form-lbl">Navn på fond/konto</label><input class="form-inp" type="text" id="fond-navn" placeholder="f.eks. Nordnet indeksfond"></div>
+    <div class="form-field"><label class="form-lbl">Nåværende verdi</label><div class="form-row"><input class="form-inp" type="number" id="fond-verdi" placeholder="15000"><span class="form-unit">kr</span></div></div>
+    <div class="form-field"><label class="form-lbl">Innskutt totalt</label><div class="form-row"><input class="form-inp" type="number" id="fond-inn" placeholder="12000"><span class="form-unit">kr</span></div></div>
+    <button class="save-btn" onclick="saveFond()">Lagre fond 📈</button>`;
+  if(type==='legg-til-sparemal') return `
+    <div class="form-field"><label class="form-lbl">Hva sparer du til?</label><input class="form-inp" type="text" id="mal-navn" placeholder="f.eks. Fotballsko, Ferie, Utstyr"></div>
+    <div class="form-field"><label class="form-lbl">Målbeløp</label><div class="form-row"><input class="form-inp" type="number" id="mal-total" placeholder="3000"><span class="form-unit">kr</span></div></div>
+    <div class="form-field"><label class="form-lbl">Spart så langt</label><div class="form-row"><input class="form-inp" type="number" id="mal-spart" placeholder="500"><span class="form-unit">kr</span></div></div>
+    <button class="save-btn" onclick="saveSparemal()">Lagre mål 🎯</button>`;
+  if(type==='legg-til-utgift') return `
+    <div class="form-field"><label class="form-lbl">Utgift</label><input class="form-inp" type="text" id="utg-navn" placeholder="f.eks. Sats treningssenter"></div>
+    <div class="form-field"><label class="form-lbl">Beløp per måned</label><div class="form-row"><input class="form-inp" type="number" id="utg-beløp" placeholder="399"><span class="form-unit">kr/mnd</span></div></div>
+    <div class="form-field"><label class="form-lbl">Kategori</label>
+    <select class="form-inp" id="utg-kat">
+      <option value="trening">Trening 💪</option>
+      <option value="mat">Mat 🍔</option>
+      <option value="transport">Transport 🚗</option>
+      <option value="abonnement">Abonnement 📱</option>
+      <option value="annet">Annet</option>
+    </select></div>
+    <button class="save-btn" onclick="saveUtgift()">Lagre utgift</button>`;
+  if(type==='legg-til-task') return `
+    <div class="form-field"><label class="form-lbl">Oppgave</label><textarea class="form-inp" id="task-txt" style="min-height:80px;resize:none" placeholder="Beskriv oppgaven..."></textarea></div>
+    <div class="form-field"><label class="form-lbl">Prioritet</label>
+    <select class="form-inp" id="task-pri">
+      <option value="high">🔴 Høy prioritet</option>
+      <option value="med">🟡 Middels</option>
+      <option value="low">🟢 Lav prioritet</option>
+    </select></div>
+    <button class="save-btn" style="background:var(--purple)" onclick="saveTask()">Legg til oppgave</button>`;
+  if(type==='legg-til-notat') return `
+    <div class="form-field"><label class="form-lbl">Tittel</label><input class="form-inp" type="text" id="notat-tittel" placeholder="Idé eller notat..."></div>
+    <div class="form-field"><label class="form-lbl">Innhold</label><textarea class="form-inp" id="notat-txt" style="min-height:100px;resize:none" placeholder="Beskriv ideen..."></textarea></div>
+    <button class="save-btn" style="background:var(--purple)" onclick="saveNotat()">Lagre notat</button>`;
+  return '';
+}
+
+// Jobb preview
+document.addEventListener('input', function(e){
+  if(e.target.id==='jobb-timer'){
+    const t=parseFloat(e.target.value)||0;
+    const brutto=t*TIMELONN;
+    const netto=nettoCalc(brutto);
+    const p=document.getElementById('jobb-preview');
+    if(p&&t>0) p.textContent=`${t}t × ${TIMELONN} kr = ${fmtKr(brutto)} brutto → ${fmtKr(netto)} netto`;
+    else if(p) p.textContent='';
+  }
+});
+
+// ===================== ØKONOMI SAVE =====================
+function saveJobb(){
+  const dato=document.getElementById('jobb-dato').value;
+  const timer=parseFloat(document.getElementById('jobb-timer').value)||0;
+  const desc=document.getElementById('jobb-desc').value.trim();
+  if(!dato||!timer){showToast('Fyll inn dato og timer');return;}
+  const mk=dato.slice(0,7);
+  if(!D.ok_jobber) D.ok_jobber=[];
+  D.ok_jobber.push({id:Date.now(),dato,timer,desc,mk});
+  D.ok_jobber.sort((a,b)=>b.dato.localeCompare(a.dato));
+  saveD();closeSheet();showToast(`${timer}t lagt til — ${fmtKr(timer*TIMELONN)}`);
+}
+function saveFond(){
+  const navn=document.getElementById('fond-navn').value.trim();
+  const verdi=parseFloat(document.getElementById('fond-verdi').value)||0;
+  const inn=parseFloat(document.getElementById('fond-inn').value)||0;
+  if(!navn||!verdi){showToast('Fyll inn navn og verdi');return;}
+  if(!D.ok_fond) D.ok_fond=[];
+  D.ok_fond.push({id:Date.now(),navn,verdi,inn,dato:todayStr()});
+  saveD();closeSheet();showToast('Fond lagret 📈');
+}
+function saveSparemal(){
+  const navn=document.getElementById('mal-navn').value.trim();
+  const total=parseFloat(document.getElementById('mal-total').value)||0;
+  const spart=parseFloat(document.getElementById('mal-spart').value)||0;
+  if(!navn||!total){showToast('Fyll inn navn og beløp');return;}
+  if(!D.ok_sparemal) D.ok_sparemal=[];
+  D.ok_sparemal.push({id:Date.now(),navn,total,spart});
+  saveD();closeSheet();showToast('Sparemål lagret 🎯');
+}
+function saveUtgift(){
+  const navn=document.getElementById('utg-navn').value.trim();
+  const beløp=parseFloat(document.getElementById('utg-beløp').value)||0;
+  const kat=document.getElementById('utg-kat').value;
+  if(!navn||!beløp){showToast('Fyll inn navn og beløp');return;}
+  if(!D.ok_utgifter) D.ok_utgifter=[];
+  D.ok_utgifter.push({id:Date.now(),navn,beløp,kat});
+  saveD();closeSheet();showToast('Utgift lagret');
+}
+function slettJobb(id){
+  D.ok_jobber=D.ok_jobber.filter(j=>j.id!==id);
+  saveD();renderOkono();showToast('Slettet');
+}
+function slettFond(id){D.ok_fond=D.ok_fond.filter(f=>f.id!==id);saveD();renderOkono();}
+function slettSparemal(id){D.ok_sparemal=D.ok_sparemal.filter(s=>s.id!==id);saveD();renderOkono();}
+function slettUtgift(id){D.ok_utgifter=D.ok_utgifter.filter(u=>u.id!==id);saveD();renderOkono();}
+function oppdaterSpart(id){
+  const ny=parseFloat(prompt('Ny spart beløp (kr):'));
+  if(isNaN(ny)) return;
+  const m=D.ok_sparemal.find(s=>s.id===id);
+  if(m){m.spart=ny;saveD();renderOkono();}
+}
+
+// ===================== RENDER ØKONOMI =====================
+function renderOkono(){
+  const mk=currentMonthKey();
+  const pmk=prevMonthKey();
+  const d=new Date();
+  const mndNavn=d.toLocaleDateString('nb-NO',{month:'long',year:'numeric'});
+  document.getElementById('ok-period').textContent=mndNavn;
+
+  const jobberMnd=(D.ok_jobber||[]).filter(j=>j.mk===mk);
+  const timerMnd=jobberMnd.reduce((s,j)=>s+j.timer,0);
+  const bruttoMnd=timerMnd*TIMELONN;
+  const nettoMnd=nettoCalc(bruttoMnd);
+  const skattMnd=bruttoMnd*SKATT_PCT/100;
+  const pensjonMnd=bruttoMnd*PENSJON_PCT/100;
+  const ferierMnd=bruttoMnd*FERIE_PCT/100;
+
+  document.getElementById('ok-brutto').textContent=fmtKr(bruttoMnd);
+  document.getElementById('ok-netto-sub').textContent=`Netto etter skatt og pensjon: ${fmtKr(nettoMnd)}`;
+  document.getElementById('ok-timer').textContent=Math.round(timerMnd*10)/10;
+  document.getElementById('ok-timer-chip').textContent=`${jobberMnd.length} dager`;
+  document.getElementById('ok-neste').textContent=fmtKr(nettoMnd);
+
+  document.getElementById('ok-skatt-info').innerHTML=`
+    <div class="list-row">
+      <div class="lr-main"><div class="lr-title">Brutto lønn</div><div class="lr-sub">${Math.round(timerMnd*10)/10}t × ${TIMELONN} kr/t</div></div>
+      <div class="lr-val">${fmtKr(bruttoMnd)}</div>
+    </div>
+    <div class="list-row">
+      <div class="lr-main"><div class="lr-title">Skatt (${SKATT_PCT}%)</div><div class="lr-sub">Trekkes fra lønn</div></div>
+      <div class="lr-val" style="color:var(--red)">-${fmtKr(skattMnd)}</div>
+    </div>
+    <div class="list-row">
+      <div class="lr-main"><div class="lr-title">Pensjon (${PENSJON_PCT}%)</div><div class="lr-sub">OTP - obligatorisk</div></div>
+      <div class="lr-val" style="color:var(--amber)">-${fmtKr(pensjonMnd)}</div>
+    </div>
+    <div class="list-row">
+      <div class="lr-main"><div class="lr-title">Feriepenger (${FERIE_PCT}%)</div><div class="lr-sub">Utbetales neste år</div></div>
+      <div class="lr-val" style="color:var(--teal)">+${fmtKr(ferierMnd)}</div>
+    </div>
+    <div class="list-row" style="border:none">
+      <div class="lr-main"><div class="lr-title" style="color:var(--green);font-size:15px">Netto utbetaling 12. neste mnd</div></div>
+      <div class="lr-val" style="color:var(--green);font-size:18px;font-weight:900">${fmtKr(nettoMnd)}</div>
+    </div>`;
+
+  // Jobbdager
+  const jl=document.getElementById('ok-jobb-liste');
+  if(!jobberMnd.length){jl.innerHTML='<div class="empty"><div class="ei">💼</div><div class="et">Ingen dager logget denne måneden</div></div>';}
+  else{jl.innerHTML=jobberMnd.map(j=>`
+    <div class="list-row">
+      <div class="lr-icon" style="background:var(--green-l)">💼</div>
+      <div class="lr-main"><div class="lr-title">${fmtDate(j.dato)}</div><div class="lr-sub">${j.desc||'Vikartime'}</div></div>
+      <div class="lr-right">
+        <div class="lr-val">${fmtKr(j.timer*TIMELONN)}</div>
+        <div class="lr-sub2">${j.timer}t</div>
+      </div>
+      <button onclick="slettJobb(${j.id})" style="padding:4px 8px;font-size:12px;color:var(--red);font-weight:700;margin-left:8px">✕</button>
+    </div>`).join('');}
+
+  // Fond
+  const fondEl=document.getElementById('ok-fond');
+  const fond=D.ok_fond||[];
+  const totFond=fond.reduce((s,f)=>s+f.verdi,0);
+  const totInn=fond.reduce((s,f)=>s+f.inn,0);
+  const avkast=totFond-totInn;
+  if(!fond.length){fondEl.innerHTML='<div class="empty"><div class="ei">📈</div><div class="et">Legg til fond og sparekonto</div></div>';}
+  else{fondEl.innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:4px">
+      <div><div style="font-size:12px;color:var(--text3)">Total verdi</div><div style="font-size:22px;font-weight:900;color:var(--green)">${fmtKr(totFond)}</div></div>
+      <div style="text-align:right"><div style="font-size:12px;color:var(--text3)">Avkastning</div><div style="font-size:16px;font-weight:800;color:${avkast>=0?'var(--green)':'var(--red)'}">${avkast>=0?'+':''}${fmtKr(avkast)}</div></div>
+    </div>
+    ${fond.map(f=>`<div style="padding:10px 0;border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="lr-icon" style="background:var(--green-l)">📈</div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:700">${f.navn}</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:1px">Innskutt: ${fmtKr(f.inn)} · Sist oppdatert: ${f.sistOppdatert?fmtDate(f.sistOppdatert):'ukjent'}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:16px;font-weight:900;color:var(--green)">${fmtKr(f.verdi)}</div>
+          <div style="font-size:11px;font-weight:700;color:${f.verdi>=f.inn?'var(--green)':'var(--red)'}">${f.verdi>=f.inn?'+':''}${fmtKr(f.verdi-f.inn)}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <button onclick="oppdaterFondVerdi(${f.id})" style="flex:1;padding:7px;background:var(--green-l);color:var(--green-d);border-radius:var(--r3);font-size:12px;font-weight:700;border:1px solid var(--green)">📈 Oppdater verdi</button>
+        <button onclick="leggTilFondInnskudd(${f.id})" style="flex:1;padding:7px;background:var(--blue-l);color:var(--blue-d);border-radius:var(--r3);font-size:12px;font-weight:700;border:1px solid var(--blue)">+ Legg inn mer</button>
+        <button onclick="slettFond(${f.id})" style="padding:7px 10px;background:var(--red-l);color:var(--red-d);border-radius:var(--r3);font-size:12px;font-weight:700;border:1px solid var(--red)">✕</button>
+      </div>
+    </div>`).join('')}`;}
+
+  // Sparemål
+  const smEl=document.getElementById('ok-sparemal');
+  const sm=D.ok_sparemal||[];
+  if(!sm.length){smEl.innerHTML='<div class="empty"><div class="ei">🎯</div><div class="et">Sett sparemål for ting du vil ha</div></div>';}
+  else{smEl.innerHTML=sm.map(s=>{
+    const pct=Math.min(100,Math.round((s.spart/s.total)*100));
+    return`<div style="padding:10px 0;border-bottom:1px solid var(--border)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div style="font-size:14px;font-weight:700">🎯 ${s.navn}</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span style="font-size:13px;font-weight:800;color:var(--blue)">${fmtKr(s.spart)} / ${fmtKr(s.total)}</span>
+          <button onclick="oppdaterSpart(${s.id})" style="font-size:11px;color:var(--blue);font-weight:700">Oppdater</button>
+          <button onclick="slettSparemal(${s.id})" style="font-size:12px;color:var(--red);font-weight:700">✕</button>
+        </div>
+      </div>
+      <div style="height:8px;background:var(--card2);border-radius:4px;overflow:hidden">
+        <div style="height:100%;width:${pct}%;background:${pct>=100?'var(--green)':'var(--blue)'};border-radius:4px;transition:width .6s"></div>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-top:4px">${pct}% — ${fmtKr(s.total-s.spart)} gjenstår</div>
+    </div>`;}).join('');}
+
+  // Utgifter
+  const utg=D.ok_utgifter||[];
+  const totUtg=utg.reduce((s,u)=>s+u.beløp,0);
+  const katIcons={trening:'💪',mat:'🍔',transport:'🚗',abonnement:'📱',annet:'💳'};
+  const utgEl=document.getElementById('ok-utgifter');
+  if(!utg.length){utgEl.innerHTML='<div class="empty"><div class="ei">💳</div><div class="et">Legg til faste utgifter</div></div>';}
+  else{utgEl.innerHTML=`
+    <div style="display:flex;justify-content:space-between;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border)">
+      <span style="font-size:13px;font-weight:700;color:var(--text2)">Totalt per måned</span>
+      <span style="font-size:15px;font-weight:900;color:var(--red)">${fmtKr(totUtg)}</span>
+    </div>
+    ${utg.map(u=>`<div class="list-row">
+      <div class="lr-icon" style="background:var(--red-l)">${katIcons[u.kat]||'💳'}</div>
+      <div class="lr-main"><div class="lr-title">${u.navn}</div></div>
+      <div class="lr-val">${fmtKr(u.beløp)}/mnd</div>
+      <button onclick="slettUtgift(${u.id})" style="padding:4px 8px;font-size:12px;color:var(--red);font-weight:700;margin-left:8px">✕</button>
+    </div>`).join('')}`;}
+
+  // Chart siste 6 mnd
+  const mnd=[];
+  for(let i=5;i>=0;i--){const d2=new Date();d2.setMonth(d2.getMonth()-i);const mk2=`${d2.getFullYear()}-${String(d2.getMonth()+1).padStart(2,'0')}`;const jobberI=(D.ok_jobber||[]).filter(j=>j.mk===mk2);const brI=jobberI.reduce((s,j)=>s+j.timer,0)*TIMELONN;mnd.push({mk:mk2,br:brI,lbl:d2.toLocaleDateString('nb-NO',{month:'short'})});}
+  const maxBr=Math.max(...mnd.map(m=>m.br),1);
+  document.getElementById('ok-chart').innerHTML=mnd.map(m=>`<div class="chart-b" style="height:${Math.max(4,Math.round((m.br/maxBr)*72))}px;background:${m.mk===mk?'var(--green)':'var(--blue)'}"></div>`).join('');
+  document.getElementById('ok-chart-ls').innerHTML=mnd.map(m=>`<div class="chart-l">${m.lbl}</div>`).join('');
+}
+
+// ===================== GOLF =====================
+function saveTask(){
+  const txt=document.getElementById('task-txt').value.trim();
+  const pri=document.getElementById('task-pri').value;
+  if(!txt){showToast('Skriv inn oppgave');return;}
+  D.golf_tasks.push({id:Date.now(),txt,pri,done:false});
+  saveD();closeSheet();showToast('Oppgave lagt til');
+}
+function saveNotat(){
+  const tittel=document.getElementById('notat-tittel').value.trim();
+  const txt=document.getElementById('notat-txt').value.trim();
+  if(!tittel){showToast('Skriv inn tittel');return;}
+  if(!D.golf_notater) D.golf_notater=[];
+  D.golf_notater.push({id:Date.now(),tittel,txt,dato:todayStr()});
+  saveD();closeSheet();showToast('Notat lagret');
+}
+function toggleTask(id){
+  const t=D.golf_tasks.find(t=>t.id===id);
+  if(t){t.done=!t.done;saveD();renderGolf();}
+}
+function slettTask(id){D.golf_tasks=D.golf_tasks.filter(t=>t.id!==id);saveD();renderGolf();}
+function slettNotat(id){D.golf_notater=D.golf_notater.filter(n=>n.id!==id);saveD();renderGolf();}
+let taskTab='aktiv';
+function setTaskTab(tab,btn){taskTab=tab;document.querySelectorAll('.sg').forEach(b=>b.classList.remove('on'));btn.classList.add('on');renderGolfTasks();}
+
+const MOTIVASJONER=[
+  {t:'Du er nærmere enn du tror',s:'Hvert steg fremover, uansett størrelse, bringer deg nærmere lanseringen. Ikke stopp nå.'},
+  {t:'MVP = raskest mulig i markedet',s:'Perfekt er fienden av ferdig. Få ut en MVP, få tilbakemeldinger, iterer raskt.'},
+  {t:'Innlogging er den hardeste biten',s:'Når auth er på plass flyter resten. Du er akkurat på den vanskeligste delen — hold ut.'},
+  {t:'Golfklubber venter på deg',s:'B2B med golfklubber er et marked som ikke er mettet. Vær først.'},
+];
+
+function renderGolf(){
+  const tasks=D.golf_tasks||[];
+  const done=tasks.filter(t=>t.done).length;
+  const total=tasks.length;
+  const pct=total?Math.round((done/total)*100):0;
+  document.getElementById('golf-pct').textContent=pct+'%';
+  document.getElementById('golf-sub').textContent=`${done} av ${total} oppgaver fullført`;
+  document.getElementById('golf-done').textContent=done;
+  document.getElementById('golf-left').textContent=total-done;
+  document.getElementById('golf-done-chip').textContent=done>0?'Godt jobba!':'Kom i gang';
+  document.getElementById('golf-left-chip').textContent=(total-done)+' igjen';
+
+  const mot=MOTIVASJONER[Math.floor(new Date().getDate()%MOTIVASJONER.length)];
+  document.getElementById('golf-motivasjon').textContent=mot.t;
+  document.getElementById('golf-motivasjon-sub').textContent=mot.s;
+
+  const faserEl=document.getElementById('golf-faser');
+  faserEl.innerHTML=GOLF_FASER.map(f=>`
+    <div class="list-row">
+      <div class="lr-icon" style="background:${f.status==='done'?'var(--green-l)':f.status==='current'?'var(--blue-l)':'var(--card2)'}">${f.icon}</div>
+      <div class="lr-main"><div class="lr-title">${f.n}</div><div class="lr-sub">${f.desc}</div></div>
+      <span class="badge ${f.status==='done'?'b-g':f.status==='current'?'b-b':'b-gr'}">${f.status==='done'?'Ferdig':f.status==='current'?'Pågår':'Snart'}</span>
+    </div>`).join('');
+
+  renderGolfTasks();
+
+  const notater=D.golf_notater||[];
+  const notatEl=document.getElementById('golf-notater');
+  if(!notater.length){notatEl.innerHTML='<div class="empty"><div class="ei">💡</div><div class="et">Legg til ideer og notater</div></div>';}
+  else{notatEl.innerHTML=notater.map(n=>`
+    <div style="padding:10px 0;border-bottom:1px solid var(--border)">
+      <div style="display:flex;justify-content:space-between;align-items:start">
+        <div style="font-size:14px;font-weight:700;color:var(--text)">${n.tittel}</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span style="font-size:11px;color:var(--text3)">${fmtDate(n.dato)}</span>
+          <button onclick="slettNotat(${n.id})" style="font-size:12px;color:var(--red);font-weight:700">✕</button>
+        </div>
+      </div>
+      ${n.txt?`<div style="font-size:13px;color:var(--text2);margin-top:4px;line-height:1.4">${n.txt}</div>`:''}
+    </div>`).join('');}
+}
+
+function renderGolfTasks(){
+  const tasks=D.golf_tasks||[];
+  const priColors={high:'var(--red)',med:'var(--amber)',low:'var(--green)'};
+  const priLabels={high:'Høy',med:'Middels',low:'Lav'};
+  const filtered=taskTab==='aktiv'?tasks.filter(t=>!t.done):tasks.filter(t=>t.done);
+  const el=document.getElementById('golf-tasks');
+  if(!filtered.length){el.innerHTML=`<div class="empty"><div class="ei">${taskTab==='aktiv'?'✅':'📋'}</div><div class="et">${taskTab==='aktiv'?'Alle oppgaver er fullført!':'Ingen fullførte oppgaver ennå'}</div></div>`;return;}
+  el.innerHTML=filtered.map(t=>`
+    <div class="task-row">
+      <div class="task-check${t.done?' done':''}" onclick="toggleTask(${t.id})">${t.done?'✓':''}</div>
+      <div style="flex:1">
+        <div class="task-txt${t.done?' done':''}">${t.txt}</div>
+        <span class="task-pri" style="background:${priColors[t.pri]}22;color:${priColors[t.pri]};margin-top:4px;display:inline-block">${priLabels[t.pri]}</span>
+      </div>
+      <button onclick="slettTask(${t.id})" style="padding:4px 8px;font-size:12px;color:var(--red);font-weight:700">✕</button>
+    </div>`).join('');
+}
+
+// ===================== FOTBALL =====================
+const DAYS_S=[
+  {n:'Man',lbl:'Lagtrening',b:'b-g',icon:'⚽',dur:'~105 min',sub:'Sprint mechanics + full lagtrening',
+   warmup:[{n:'A-skip',s:'2×20m'},{n:'B-skip',s:'2×20m'},{n:'Pogo jumps',s:'3×20 sek'},{n:'Hoftefleksor stretch',s:'45 sek/side'}],
+   secs:[{t:'Før trening — 15 min',exs:[{n:'A-skip',s:'2×20m',tip:'Sakte og presist. Høyt kneløft — foten UNDER hoften.',why:'Programmerer riktig sprint-mekanikk.'},{n:'B-skip',s:'2×20m',tip:'Strekk beinet fremfor deg i toppen.',why:'Bygger elastisitet i hamstrings.'},{n:'Pogo jumps',s:'3×20 sek',tip:'Stive ankler. Minimal bakkekontakt.',why:'Trener Achilles-elastisitet.'},{n:'Hoftefleksor stretch',s:'45 sek/side',tip:'Knestående, press hoften frem.',why:'Løsner strammede hoftefleksorer.'}]},{t:'Lagtrening',exs:[{n:'Full treningsøkt',s:'~90 min',tip:'Delta 100%. Start løpene på pasningsgiverens SISTE touch.',why:'Timing-sekundet som skiller en god 8er.'}]}],
+   main:'Full lagtrening med sprint mechanics før.',alt:'Pogo jumps på vei dit. Delta på trening.'},
+  {n:'Tir',lbl:'Baneøkt',b:'b-p',icon:'🏃',dur:'35 min',sub:'Sprint mechanics + teknisk + kondisjon',
+   warmup:[{n:'A-skip',s:'2×20m'},{n:'B-skip',s:'2×20m'},{n:'Høye kneløp',s:'3×20m'},{n:'Pogo jumps',s:'3×20 sek'}],
+   secs:[{t:'Sprint mechanics (10 min)',exs:[{n:'A/B-skip + kneløp',s:'2×20m',tip:'Sakte og presist.',why:''},{n:'Pogo jumps',s:'3×20 sek',tip:'Stive ankler.',why:''}]},{t:'Eksplosivitet med ball (15 min)',exs:[{n:'Touch & sprint',s:'10 reps',tip:'ETT touch fremover, umiddelbar fullt drag 20m. Ingen pause mellom touch og sprint.',why:'Programmerer hjernen: ball + touch = eksplosjon.'},{n:'Vend 180° + sprint',s:'8× per side',tip:'Innside touch inn, brå vending, akselerasjon.',why:'Vendingsakselerasjon — kritisk for 8eren.'},{n:'Inside cut inn i sprint',s:'10 reps',tip:'Kjegle som forsvarer. Cut brått inover, drag 15m.',why:'Trekk #1 å automatisere.'}]},{t:'Kondisjon (10 min)',exs:[{n:'Shuttle run 25m',s:'8 reps',tip:'30 sek pause mellom. Kampintensitet.',why:'Kamp-spesifikk kondisjon.'}]}],
+   main:'Full baneøkt 35 min.',alt:'Sprint mechanics + teknisk del, 20 min.'},
+  {n:'Ons',lbl:'Rolig løp',b:'b-t',icon:'🏃',dur:'35-40 min',sub:'Aerob base mot tunge legg',
+   secs:[{t:'Løpetur',exs:[{n:'Rolig kontinuerlig løp',s:'35-40 min',tip:'Tempo der du kan snakke. Puls 60-70% av maks.',why:'Aerob base er motoren. Konsekvent 4-6 uker = ingen tunge legg.'}]}],
+   main:'Rolig løpetur 35-40 min.',alt:'20 min løpetur. Aldri under 20 min.'},
+  {n:'Tor',lbl:'Kamp',b:'b-r',icon:'🏆',dur:'Kampdag',sub:'Kampdag-rutine for optimal prestasjon',
+   secs:[{t:'Næring',exs:[{n:'Frokost',s:'3-4t før',tip:'Havregrøt/pasta + egg. Mye vann.',why:'Fyller glykogenlagrene maksimalt.'},{n:'Snack',s:'1-1.5t før',tip:'Banan eller energibar.',why:'Topper lagrene.'},{n:'Vann',s:'1.5L+',tip:'Fra du våkner til kampstart.',why:'2% dehydrert = merkbart dårligere.'}]},{t:'Etter kamp',exs:[{n:'Protein',s:'20-30g innen 30 min',tip:'Egg, kvarg, shake — hva som helst.',why:'Starter restitusjon umiddelbart.'},{n:'Søvn',s:'8 timer',tip:'Ikke 6, ikke 7. Åtte.',why:'Veksthormoner produseres under søvn.'}]}],
+   main:'Kampdag — følg rutinen.',alt:'Minst frokost og vann.'},
+  {n:'Fre',lbl:'Styrke',b:'b-a',icon:'💪',dur:'45 min',sub:'Fotball-spesifikk styrke',
+   secs:[{t:'Underkropp — prioritet',exs:[{n:'Bulgarian split squat',s:'4×8/side',tip:'Sakte ned 3 sek, eksplosivt opp. Start kroppsvekt.',why:'Trener bein asymmetrisk som i sprint.'},{n:'Romanian deadlift',s:'4×8',tip:'Rett rygg langs beina. Press hoften frem opp.',why:'Hamstrings kaster deg frem i sprint.'},{n:'Calf raises',s:'3×15',tip:'Kanten av steg. Fullt ned og opp, hold 1 sek.',why:'Direkte mot tunge legg.'}]},{t:'Hoftefleksor + core',exs:[{n:'Hanging leg raises',s:'3×12',tip:'Løft til 90°, senk sakte.',why:'Hoftefleksorer + core simultant.'},{n:'Banded marching',s:'3×20',tip:'Band rundt ankler. Høye kneløp, hold 1 sek øverst.',why:'Isolert hoftefleksor.'}]},{t:'Overkropp',exs:[{n:'Dumbbell rows',s:'3×10/side',tip:'Elbuen tett, trekk til hoften.',why:''},{n:'Skulderpress',s:'3×10',tip:'Kontrollert ned, eksplosivt opp.',why:''}]}],
+   main:'Full styrkeprogram 45 min.',alt:'Split squat + RDL + calf raises. 25 min.'},
+  {n:'Lør',lbl:'Bane lett',b:'b-p',icon:'⚽',dur:'30 min',sub:'Teknisk fokus — ingen kondisjon',
+   secs:[{t:'Teknisk restitusjon',exs:[{n:'Inside cut drill',s:'10 reps/fot',tip:'Kjegle som forsvarer. Teknikk, ikke fart.',why:'Bevegelsesmønster trenes mens kroppen hviler.'},{n:'La croqueta',s:'15 min',tip:'Uke 1-2: sakte. Uke 3+: i fart.',why:'Lav tyngdepunkt lurer forsvareren.'},{n:'Frispark presisjon',s:'10 min',tip:'Begge føtter. Treffpunkt, ikke kraft.',why:''}]}],
+   main:'Baneøkt teknisk 30 min.',alt:'10 min fri ballbehandling.'},
+  {n:'Søn',lbl:'Hvile',b:'b-gr',icon:'💤',dur:'Hviledag',sub:'Obligatorisk — kroppen bygger seg i hvile',
+   secs:[{t:'Aktiv hvile',exs:[{n:'Mobilitet og tøying',s:'15 min',tip:'Hofter, lår, legg, rygg. Foran TV.',why:'Øker blodsirkulasjon, reduserer stivhet.'},{n:'Gåtur',s:'20-30 min (valgfritt)',tip:'Eneste ok aktivitet.',why:''}]}],
+   main:'Hvile obligatorisk.',alt:'Samme. Søndag er alltid hvile.'},
+];
+const DAYS_G=[
+  {n:'Man',lbl:'Lag + sprint',b:'b-g',icon:'⚡',dur:'~115 min',sub:'Lagtrening + sprint mechanics',
+   secs:[{t:'Lagtrening',exs:[{n:'Full treningsøkt',s:'Full økt',tip:'Delta fullt.',why:''}]},{t:'Etter trening — 15 min',exs:[{n:'A/B-skip + kneløp',s:'2×20m',tip:'Rett etter trening.',why:'Nervesystemet allerede aktivert.'},{n:'10×30m maks',s:'10 reps',tip:'Full pause mellom. Hvert drag 100%.',why:'Nevrologisk fartstrening.'}]}],
+   main:'Lagtrening + sprint 15 min.',alt:'Kun lagtrening slitne uker.'},
+  {n:'Tir',lbl:'Hard + intervaller',b:'b-r',icon:'🔥',dur:'55 min',sub:'Hardeste økt — push deg',
+   warmup:[{n:'A-skip',s:'2×20m'},{n:'B-skip',s:'2×20m'},{n:'Pogo jumps',s:'3×20 sek'},{n:'Høye kneløp',s:'3×20m'}],
+   secs:[{t:'Aktivering (10 min)',exs:[{n:'Sprint mechanics',s:'10 min',tip:'A/B-skip, pogo, kneløp.',why:''}]},{t:'Teknisk (20 min)',exs:[{n:'Touch & sprint',s:'12 reps',tip:'Full intensitet.',why:''},{n:'1v1 med kjegler',s:'12 reps',tip:'Veksle mellom trekk.',why:'Automatiserer under press.'},{n:'Kombinasjons-drill',s:'10 min',tip:'La croqueta → inside cut.',why:''}]},{t:'Intervaller (25 min)',exs:[{n:'6×4 min hard løping',s:'Uke 1-4',tip:'85-90% maks puls. 2 min pause.',why:'Mest dokumenterte VO2maks-metode.'},{n:'8×4 min hard løping',s:'Uke 5-8',tip:'Samme intensitet, mer volum.',why:'Progressiv overload.'}]}],
+   main:'Full økt 55 min.',alt:'Teknisk + 4×4 min intervaller. 35 min.'},
+  {n:'Ons',lbl:'Styrke + løp',b:'b-a',icon:'💪',dur:'80 min',sub:'Full kropp + løp med trette bein',
+   secs:[{t:'Underkropp (50 min)',exs:[{n:'Squat med stang',s:'Uk1-4:4×6/Uk5-8:5×5',tip:'Dypt nok. Øk 2.5-5 kg per uke.',why:'Bygger maksimal kraft.'},{n:'Romanian deadlift',s:'4×8',tip:'Progressivt tyngre.',why:''},{n:'Bulgarian split squat',s:'3×10/side',tip:'Med vekt.',why:''},{n:'Hoftefleksor cable',s:'3×12/side',tip:'Gjør alltid!',why:'Motor #1 for sprint.'},{n:'Calf raises',s:'4×15',tip:'Øk vekten.',why:''}]},{t:'Overkropp (15 min)',exs:[{n:'Pull-ups/lat pulldown',s:'3×8',tip:'Full bevegelse.',why:''},{n:'Bench/dips',s:'3×8',tip:'Eksplosivt opp.',why:''},{n:'Face pulls',s:'3×15',tip:'Albuer høyt.',why:'Skulderhelse.'}]},{t:'Løp etter styrke',exs:[{n:'Rolig løp',s:'30 min',tip:'Umiddelbart etter styrke. Rolig tempo.',why:'Trener kroppen til å løpe sliten — som kamp.'}]}],
+   main:'Full styrke + 30 min løp.',alt:'Kun underkropp + hoftefleksor. 40 min.'},
+  {n:'Tor',lbl:'Teknisk fokus',b:'b-p',icon:'⚽',dur:'40 min',sub:'Ingen kondisjon — kun ball',
+   secs:[{t:'Teknisk drill',exs:[{n:'Cruyff turn',s:'10× per side',tip:'Fra uke 3. Fake skudd, drag 180°.',why:'Utnytter forsvarerens reaksjon.'},{n:'Pasning svak fot',s:'10 min',tip:'Kun svak fot. Start 5m, flytt bakover.',why:''},{n:'Vendinger i bevegelse',s:'10 min',tip:'Gjør trekket SENT — siste mulig øyeblikk.',why:''},{n:'Fri ball',s:'10 min',tip:'Lek. Ingen krav.',why:'Fri lek bygger intuisjon.'}]}],
+   main:'Full teknisk økt 40 min.',alt:'20 min fri ball.'},
+  {n:'Fre',lbl:'Rolig løp',b:'b-t',icon:'🏃',dur:'45-50 min',sub:'Aerob base — aldri dropp',
+   secs:[{t:'Aerob base',exs:[{n:'Rolig løpetur',s:'Uk1-4:45min/Uk5-8:50min',tip:'Puls 60-70%. Snakketempo.',why:'Fundamentet for alt annet.'}]}],
+   main:'Rolig løpetur 45-50 min.',alt:'25-30 min. Aldri under 20 min.'},
+  {n:'Lør',lbl:'Sprintøkt',b:'b-r',icon:'⚡',dur:'45 min',sub:'Maksimal fart — 100% per drag',
+   warmup:[{n:'A-skip',s:'2×20m'},{n:'B-skip',s:'2×20m'},{n:'Høye kneløp',s:'3×20m'},{n:'Pogo jumps',s:'3×20 sek'}],
+   secs:[{t:'Sprint mechanics (10 min)',exs:[{n:'Standard runde',s:'10 min',tip:'Grundig oppvarming.',why:''}]},{t:'Sprintdrag (35 min)',exs:[{n:'10-12×30m maks',s:'Full pause',tip:'Hvert drag 100%. Uke 1-4: 10 reps. Uke 5-8: 12 reps.',why:'Nevrologisk fartstrening.'},{n:'5-7×60m progressive',s:'Full pause',tip:'Start rolig, maks siste 20m.',why:'Steglengde i overgang til toppfart.'},{n:'4×100m på 80%',s:'90 sek pause',tip:'Fokus på rytme og steglengde.',why:''}]}],
+   main:'Full sprintøkt 45 min.',alt:'30m-drag (10 reps) + mechanics. 25 min.'},
+  {n:'Søn',lbl:'Hvile',b:'b-gr',icon:'💤',dur:'Hviledag',sub:'Obligatorisk — søvn er trening',
+   secs:[{t:'Aktiv hvile',exs:[{n:'Mobilitet',s:'15 min',tip:'Hofter, lår, legg, rygg.',why:''},{n:'Gåtur',s:'20-30 min',tip:'Eneste ok aktivitet.',why:''}]}],
+   main:'Hvile obligatorisk.',alt:'Samme.'},
+];
+
+let fbPhase='sesong';
+function setFbPhase(p){
+  fbPhase=p;D.fb_phase=p;saveD();
+  document.getElementById('fb-ps').classList.toggle('on',p==='sesong');
+  document.getElementById('fb-pg').classList.toggle('on',p==='grind');
+  renderFbDayGrid();
+}
+
+function fbCheckIn(type){
+  const t=todayStr();
+  if(D.fb_checkins[t]===type) delete D.fb_checkins[t];
+  else D.fb_checkins[t]=type;
+  saveD();renderFotball();
+  showToast(type==='full'?'Full økt ✓ Godt jobba!':type==='alt'?'Alternativ — bra!':'Skip registrert');
+}
+
+function renderFotball(){
+  fbPhase=D.fb_phase||'sesong';
+  document.getElementById('fb-ps').classList.toggle('on',fbPhase==='sesong');
+  document.getElementById('fb-pg').classList.toggle('on',fbPhase==='grind');
+  const days=fbPhase==='grind'?DAYS_G:DAYS_S;
+  const idx=dowIdx();
+  const day=days[idx];
+  const t=todayStr();
+  const ci=D.fb_checkins[t];
+
+  document.getElementById('fb-pill').textContent=fbPhase==='sesong'?'Sesong':'Sommergrindet';
+  document.getElementById('fb-ey').textContent=fbPhase==='sesong'?'Sesong — nå til 11. juni':'Sommergrindet — 12. juni–9. aug';
+  document.getElementById('fb-title').textContent=day.n+' — '+day.lbl;
+  document.getElementById('fb-sub').textContent=day.sub;
+  document.getElementById('fb-btn-full').style.background=ci==='full'?'#DCFCE7':'#fff';
+  document.getElementById('fb-btn-full').style.color=ci==='full'?'#166534':'var(--blue)';
+
+  // week
+  const ws=weekStart();
+  document.getElementById('fb-week-row').innerHTML=days.map((dd,i)=>{
+    const dt=new Date(ws+'T12:00');dt.setDate(dt.getDate()+i);
+    const iso=dt.toISOString().slice(0,10);
+    const c=D.fb_checkins[iso];
+    let cls='wr-empty',lbl=dd.icon;
+    if(c==='full'){cls='wr-full';lbl='✓';}
+    else if(c==='alt'){cls='wr-alt';lbl='~';}
+    else if(c==='skip'){cls='wr-skip';lbl='✗';}
+    else if(i===idx) cls='wr-today';
+    return `<div class="wk-col" onclick="openFbSheet(${i})"><div class="wk-ring ${cls}">${lbl}</div><div class="wk-lbl">${dd.n}</div></div>`;
+  }).join('');
+
+  // stats
+  let streak=0,dd2=new Date();
+  for(let i=0;i<365;i++){const c=D.fb_checkins[dd2.toISOString().slice(0,10)];if(c==='full'||c==='alt')streak++;else if(i>0)break;dd2.setDate(dd2.getDate()-1);}
+  const ws2=weekStart();let wd=0;
+  for(let i=0;i<7;i++){const dt=new Date(ws2+'T12:00');dt.setDate(dt.getDate()+i);const c=D.fb_checkins[dt.toISOString().slice(0,10)];if(c==='full'||c==='alt')wd++;}
+  document.getElementById('fb-stats').innerHTML=`
+    <div class="sc"><div class="sv">${streak}</div><div class="sl">Dagers streak</div><div class="chip c-b">🔥${streak>0?' Hold det':'Start'}</div></div>
+    <div class="sc"><div class="sv">${Math.round((wd/7)*100)}%</div><div class="sl">Denne uka</div><div class="chip ${wd>=5?'c-g':wd>=3?'c-b':'c-a'}">${wd} av 7</div></div>`;
+
+  renderFbDayGrid();
+}
+
+function renderFbDayGrid(){
+  const days=fbPhase==='grind'?DAYS_G:DAYS_S;
+  const todayIdx=dowIdx();
+  const ws=weekStart();
+  document.getElementById('fb-day-grid').innerHTML=days.map((d,i)=>{
+    const dt=new Date(ws+'T12:00');dt.setDate(dt.getDate()+i);
+    const iso=dt.toISOString().slice(0,10);
+    const ci=D.fb_checkins[iso];
+    let cls='';
+    if(ci==='full') cls=' done-f';
+    else if(ci==='alt') cls=' done-a';
+    const isToday=i===todayIdx;
+    return `<div class="dtile${cls}${isToday?' active':''}" onclick="openFbSheet(${i})">
+      <div class="dt-icon">${d.icon}</div>
+      <div class="dt-n">${d.n}</div>
+      <div class="dt-l">${d.lbl}</div>
+    </div>`;
+  }).join('');
+}
+
+function openFbSheet(idx){
+  const days=fbPhase==='grind'?DAYS_G:DAYS_S;
+  const day=days[idx];
+  const ws=weekStart();
+  const dt=new Date(ws+'T12:00');dt.setDate(dt.getDate()+idx);
+  const iso=dt.toISOString().slice(0,10);
+  const ci=D.fb_checkins[iso];
+
+  document.getElementById('sh-title').textContent=day.n+' — '+day.lbl;
+  let html='';
+  if(day.warmup){
+    html+=`<div class="sec-lbl">Oppvarming — gjør FØR alt annet</div>
+    <div class="wb"><div class="wb-title">Sprint mechanics (10 min)</div>
+    ${day.warmup.map((w,wi)=>`<div class="wb-row"><div class="wb-num">${wi+1}</div><div class="wb-name">${w.n}</div><div class="wb-sets">${w.s}</div></div>`).join('')}</div>`;
+  }
+  day.secs.forEach(sec=>{
+    html+=`<div class="sec-lbl" style="border-top:1px solid var(--border);margin-top:4px">${sec.t}</div>`;
+    sec.exs.forEach(ex=>{
+      html+=`<div class="ex-block">
+        <div class="exb-top"><div class="exb-name">${ex.n}</div><div class="exb-sets">${ex.s}</div></div>
+        <div class="exb-tip">${ex.tip}</div>
+        ${ex.why?`<div class="exb-why">💡 ${ex.why}</div>`:''}
+      </div>`;
+    });
+  });
+  html+=`<div class="alt-pair">
+    <div class="abox a-m"><div class="am-l">Anbefalt</div><div class="am-t">${day.main}</div></div>
+    <div class="abox a-a"><div class="aa-l">Alternativ</div><div class="aa-t">${day.alt}</div></div>
+  </div><div style="height:16px"></div>`;
+
+  document.getElementById('sh-body').innerHTML=html;
+  document.getElementById('sh-footer').innerHTML=`
+    <div class="sh-checkin">
+      <button class="sh-cb sh-cb-f${ci==='full'?' done':''}" onclick="fbCheckInDay('${iso}','full')">${ci==='full'?'✓ Full økt logget':'Logg full økt'}</button>
+      <button class="sh-cb sh-cb-a${ci==='alt'?' done':''}" onclick="fbCheckInDay('${iso}','alt')">${ci==='alt'?'~ Alternativ':'Logg alternativ'}</button>
+    </div>`;
+  document.getElementById('sh-body').scrollTop=0;
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('sheet').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function fbCheckInDay(iso,type){
+  if(D.fb_checkins[iso]===type) delete D.fb_checkins[iso];
+  else D.fb_checkins[iso]=type;
+  saveD();
+  const ci=D.fb_checkins[iso];
+  document.getElementById('sh-footer').innerHTML=`
+    <div class="sh-checkin">
+      <button class="sh-cb sh-cb-f${ci==='full'?' done':''}" onclick="fbCheckInDay('${iso}','full')">${ci==='full'?'✓ Full økt logget':'Logg full økt'}</button>
+      <button class="sh-cb sh-cb-a${ci==='alt'?' done':''}" onclick="fbCheckInDay('${iso}','alt')">${ci==='alt'?'~ Alternativ':'Logg alternativ'}</button>
+    </div>`;
+  showToast(type==='full'?'Full økt ✓':type==='alt'?'Alternativ ✓':'Registrert');
+  renderFotball();
+}
+
+// ===================== HOME =====================
+function renderHome(){
+  const d=new Date();
+  const timer=d.getHours();
+  const hilsen=timer<12?'God morgen':timer<17?'God ettermiddag':'God kveld';
+  document.getElementById('home-title').textContent=hilsen+' 👋';
+  document.getElementById('home-date').textContent=d.toLocaleDateString('nb-NO',{weekday:'long',day:'numeric',month:'long'});
+
+  let streak=0,dd2=new Date();
+  for(let i=0;i<365;i++){const c=D.fb_checkins[dd2.toISOString().slice(0,10)];if(c==='full'||c==='alt')streak++;else if(i>0)break;dd2.setDate(dd2.getDate()-1);}
+  document.getElementById('home-streak').textContent=streak>0?`🔥 ${streak} dager streak`:'Start streak i dag';
+
+  // kamp banner
+  const t=todayStr();
+  const nextKamp=KAMP_DATES.find(k=>k>=t);
+  const kampBanner=document.getElementById('home-kamp-banner');
+  if(nextKamp){
+    const diff=Math.round((new Date(nextKamp)-new Date(t))/86400000);
+    if(diff<=4){
+      kampBanner.innerHTML=`<div style="margin:14px 16px 0;background:linear-gradient(135deg,var(--red),#EF4444);border-radius:14px;padding:14px 16px;color:#fff;display:flex;align-items:center;gap:12px" onclick="navTo('fotball')">
+        <div style="font-size:24px">🏆</div>
+        <div><div style="font-size:14px;font-weight:800">${diff===0?'KAMPDAG I DAG!':diff===1?'Kamp i morgen!':'Kamp om '+diff+' dager'}</div>
+        <div style="font-size:12px;opacity:.8">${new Date(nextKamp+'T12:00').toLocaleDateString('nb-NO',{weekday:'long',day:'numeric',month:'short'})}</div></div>
+      </div>`;
+    } else kampBanner.innerHTML='';
+  }
+
+  // inntekt hero
+  const mk=currentMonthKey();
+  const jobberMnd=(D.ok_jobber||[]).filter(j=>j.mk===mk);
+  const timerMnd=jobberMnd.reduce((s,j)=>s+j.timer,0);
+  const bruttoMnd=timerMnd*TIMELONN;
+  const nettoMnd=nettoCalc(bruttoMnd);
+  document.getElementById('home-hero').innerHTML=`
+    <div class="hero-card" style="background:linear-gradient(135deg,#16A34A,#22C55E)" onclick="navTo('okono')">
+      <div class="hc-ey">Tjent denne måneden</div>
+      <div class="hc-val">${fmtKr(bruttoMnd)}</div>
+      <div class="hc-sub">Netto: ${fmtKr(nettoMnd)} · ${Math.round(timerMnd*10)/10}t jobbet · Trykk for detaljer</div>
+    </div>`;
+
+  // stats grid
+  const tasks=D.golf_tasks||[];
+  const doneTasks=tasks.filter(t=>t.done).length;
+  const totTasks=tasks.length;
+  const fond=D.ok_fond||[];
+  const totFond=fond.reduce((s,f)=>s+f.verdi,0);
+  const ws2=weekStart();let wd=0;
+  for(let i=0;i<7;i++){const dt=new Date(ws2+'T12:00');dt.setDate(dt.getDate()+i);const c=D.fb_checkins[dt.toISOString().slice(0,10)];if(c==='full'||c==='alt')wd++;}
+  document.getElementById('home-stats').innerHTML=`
+    <div class="sc" onclick="navTo('fotball')" style="cursor:pointer">
+      <div class="sv">${Math.round((wd/7)*100)}%</div><div class="sl">Fotball denne uka</div>
+      <div class="chip c-b">${wd}/7 dager</div>
+    </div>
+    <div class="sc" onclick="navTo('golf')" style="cursor:pointer">
+      <div class="sv">${totTasks?Math.round((doneTasks/totTasks)*100):0}%</div><div class="sl">Caddy-Daddy MVP</div>
+      <div class="chip c-p">${doneTasks}/${totTasks} oppgaver</div>
+    </div>
+    <div class="sc" onclick="navTo('okono')" style="cursor:pointer">
+      <div class="sv">${fmtKr(totFond).replace(' kr','')}</div><div class="sl">Fond totalt</div>
+      <div class="chip c-g">kr</div>
+    </div>
+    <div class="sc" onclick="openSheet('legg-til-jobb')" style="cursor:pointer">
+      <div class="sv">${jobberMnd.length}</div><div class="sl">Dager jobbet</div>
+      <div class="chip c-a">+ Logg dag</div>
+    </div>`;
+
+  // quick actions
+  const days=D.fb_phase==='grind'?DAYS_G:DAYS_S;
+  const day=days[dowIdx()];
+  document.getElementById('home-quick').innerHTML=`
+    <div class="sec-t">Rask handling</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="card" style="cursor:pointer" onclick="openFbSheet(${dowIdx()})">
+        <div class="cb" style="display:flex;align-items:center;gap:12px">
+          <div style="font-size:28px">${day.icon}</div>
+          <div style="flex:1"><div style="font-size:14px;font-weight:700">Dagens fotball-økt</div><div style="font-size:13px;color:var(--text2)">${day.lbl} · ${day.dur}</div></div>
+          <div style="font-size:13px;color:var(--blue);font-weight:700">Se program →</div>
+        </div>
+      </div>
+      <div class="card" style="cursor:pointer" onclick="openSheet('legg-til-jobb')">
+        <div class="cb" style="display:flex;align-items:center;gap:12px">
+          <div style="font-size:28px">💼</div>
+          <div style="flex:1"><div style="font-size:14px;font-weight:700">Logg arbeidsdag</div><div style="font-size:13px;color:var(--text2)">Legg til timer jobbet i dag</div></div>
+          <div style="font-size:13px;color:var(--green);font-weight:700">+ Logg →</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// INIT
+renderHome();
+renderFotball();
+renderOkono();
+renderGolf();
+// Init dag-dato
+const _dd=document.getElementById('dag-dato');if(_dd)_dd.value=todayStr();
+</script>
+</body>
+</html>
+<script>
+// Swipe down to close sheet
+let touchStartY=0;
+const sheet=document.getElementById('sheet');
+sheet.addEventListener('touchstart',e=>{touchStartY=e.touches[0].clientY;},{passive:true});
+sheet.addEventListener('touchend',e=>{
+  const diff=e.changedTouches[0].clientY-touchStartY;
+  if(diff>80) closeSheet();
+},{passive:true});
+
+// ===================== DAGBOK OG HISTORIKK =====================
+document.addEventListener('change', function(e){
+  if(e.target.id==='dag-kat'){
+    const v=e.target.value;
+    const wrap=document.getElementById('dag-belop-wrap');
+    if(wrap) wrap.style.display=(v.includes('penger')||v==='fond')?'block':'none';
+  }
+});
+
+function saveDagbok(){
+  const dato=document.getElementById('dag-dato').value||todayStr();
+  const kat=document.getElementById('dag-kat').value;
+  const txt=document.getElementById('dag-txt').value.trim();
+  const belop=parseFloat(document.getElementById('dag-belop').value)||0;
+  if(!txt){showToast('Skriv noe i dagboken');return;}
+  if(!D.dagbok) D.dagbok=[];
+  D.dagbok.unshift({id:Date.now(),dato,kat,txt,belop});
+  if(D.dagbok.length>200) D.dagbok=D.dagbok.slice(0,200);
+  saveD();
+  document.getElementById('dag-txt').value='';
+  document.getElementById('dag-belop').value='';
+  renderDagListe();
+  showToast('Lagret i dagboken ✓');
+}
+
+function slettDagbok(id){
+  D.dagbok=(D.dagbok||[]).filter(d=>d.id!==id);
+  saveD();renderDagListe();
+}
+
+const katConfig={
+  'penger-bra':{icon:'💰',label:'Bra pengevalg',color:'var(--green)'},
+  'penger-dårlig':{icon:'😬',label:'Kastet bort penger',color:'var(--red)'},
+  'fond':{icon:'📈',label:'Fond',color:'var(--teal)'},
+  'trening':{icon:'💪',label:'Trening',color:'var(--amber)'},
+  'fotball':{icon:'⚽',label:'Fotball',color:'var(--blue)'},
+  'golf':{icon:'🏌️',label:'Prosjekt',color:'var(--purple)'},
+  'generelt':{icon:'📝',label:'Generelt',color:'var(--text3)'},
+};
+
+function renderDagListe(){
+  const el=document.getElementById('dag-liste');
+  if(!el) return;
+  const dagbok=D.dagbok||[];
+  if(!dagbok.length){el.innerHTML='<div class="empty"><div class="ei">✍️</div><div class="et">Ingen dagbokinnlegg ennå</div></div>';return;}
+  el.innerHTML=dagbok.map(d=>{
+    const k=katConfig[d.kat]||katConfig['generelt'];
+    return`<div style="padding:12px 0;border-bottom:1px solid var(--border)">
+      <div style="display:flex;align-items:start;justify-content:space-between;gap:8px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:20px">${k.icon}</span>
+          <div>
+            <div style="font-size:12px;font-weight:700;color:${k.color}">${k.label}</div>
+            <div style="font-size:11px;color:var(--text3)">${fmtDate(d.dato)}</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          ${d.belop?`<span style="font-size:13px;font-weight:800;color:${d.kat==='penger-dårlig'?'var(--red)':'var(--green)'}">${d.kat==='penger-dårlig'?'-':'+'} ${fmtKr(d.belop)}</span>`:''}
+          <button onclick="slettDagbok(${d.id})" style="font-size:12px;color:var(--red);font-weight:700">✕</button>
+        </div>
+      </div>
+      <div style="font-size:13px;color:var(--text2);margin-top:6px;line-height:1.5;padding-left:36px">${d.txt}</div>
+    </div>`;
+  }).join('');
+}
+
+let histTab='dag';
+function setHistTab(tab,btn){
+  histTab=tab;
+  ['dag','okono','fotball'].forEach(t=>document.getElementById('ht-'+t).style.display=t===tab?'block':'none');
+  document.querySelectorAll('#p-historikk .sg').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  if(tab==='okono') renderHistOkono();
+  if(tab==='fotball') renderHistFotball();
+  if(tab==='dag') renderDagListe();
+}
+
+function renderHistOkono(){
+  // All job days
+  const alle=(D.ok_jobber||[]);
+  const el=document.getElementById('hist-jobb-alle');
+  if(!alle.length){el.innerHTML='<div class="empty"><div class="ei">💼</div><div class="et">Ingen jobbdager logget ennå</div></div>';}
+  else{el.innerHTML=alle.map(j=>`
+    <div class="list-row">
+      <div class="lr-icon" style="background:var(--green-l)">💼</div>
+      <div class="lr-main"><div class="lr-title">${fmtDate(j.dato)}</div><div class="lr-sub">${j.desc||'Vikartime'}</div></div>
+      <div class="lr-right"><div class="lr-val">${fmtKr(j.timer*205)}</div><div class="lr-sub2">${j.timer}t</div></div>
+    </div>`).join('');}
+
+  // Monthly totals
+  const mndMap={};
+  alle.forEach(j=>{
+    if(!mndMap[j.mk]) mndMap[j.mk]={timer:0,brutto:0,dager:0};
+    mndMap[j.mk].timer+=j.timer;
+    mndMap[j.mk].brutto+=j.timer*205;
+    mndMap[j.mk].dager++;
+  });
+  const mndEl=document.getElementById('hist-mnd-inntekt');
+  const mndKeys=Object.keys(mndMap).sort().reverse();
+  if(!mndKeys.length){mndEl.innerHTML='<div class="empty"><div class="ei">📊</div><div class="et">Ingen data ennå</div></div>';}
+  else{mndEl.innerHTML=mndKeys.map(mk=>{
+    const m=mndMap[mk];
+    const d=new Date(mk+'-01');
+    const mndNavn=d.toLocaleDateString('nb-NO',{month:'long',year:'numeric'});
+    return`<div class="list-row">
+      <div class="lr-main">
+        <div class="lr-title">${mndNavn}</div>
+        <div class="lr-sub">${m.dager} dager · ${Math.round(m.timer*10)/10}t</div>
+      </div>
+      <div class="lr-right">
+        <div class="lr-val" style="color:var(--green)">${fmtKr(m.brutto)}</div>
+        <div class="lr-sub2">→ ${fmtKr(nettoCalc(m.brutto))} netto</div>
+      </div>
+    </div>`;}).join('');}
+}
+
+function renderHistFotball(){
+  const checkins=D.fb_checkins||{};
+  const keys=Object.keys(checkins).sort().reverse();
+  const el=document.getElementById('hist-fb-alle');
+  if(!keys.length){el.innerHTML='<div class="empty"><div class="ei">⚽</div><div class="et">Ingen avkryssede dager ennå</div></div>';return;}
+  
+  const typeLabel={'full':'Full økt ✓','alt':'Alternativ ~','skip':'Skip ✗'};
+  const typeColor={'full':'var(--green)','alt':'var(--amber)','skip':'var(--red)'};
+  
+  el.innerHTML=keys.slice(0,50).map(k=>`
+    <div class="list-row">
+      <div class="lr-icon" style="background:${checkins[k]==='full'?'var(--green-l)':checkins[k]==='alt'?'var(--amber-l)':'var(--red-l)'}">⚽</div>
+      <div class="lr-main"><div class="lr-title">${fmtDate(k)}</div></div>
+      <span class="badge" style="background:${checkins[k]==='full'?'var(--green-l)':checkins[k]==='alt'?'var(--amber-l)':'var(--red-l)'};color:${typeColor[checkins[k]]}">${typeLabel[checkins[k]]||checkins[k]}</span>
+    </div>`).join('');
+
+  // Monthly consistency
+  const mndFb={};
+  keys.forEach(k=>{
+    const mk=k.slice(0,7);
+    if(!mndFb[mk]){mndFb[mk]={full:0,alt:0,skip:0,total:0};}
+    mndFb[mk][checkins[k]]=(mndFb[mk][checkins[k]]||0)+1;
+    mndFb[mk].total++;
+  });
+  const mndEl=document.getElementById('hist-fb-mnd');
+  const mndKeys2=Object.keys(mndFb).sort().reverse();
+  mndEl.innerHTML=mndKeys2.map(mk=>{
+    const m=mndFb[mk];
+    const d=new Date(mk+'-01');
+    const mndNavn=d.toLocaleDateString('nb-NO',{month:'long',year:'numeric'});
+    const aktive=(m.full||0)+(m.alt||0);
+    return`<div class="list-row">
+      <div class="lr-main">
+        <div class="lr-title">${mndNavn}</div>
+        <div class="lr-sub">${m.full||0} fulle · ${m.alt||0} alternative · ${m.skip||0} skip</div>
+      </div>
+      <div class="lr-right">
+        <div class="lr-val">${aktive} dager</div>
+        <div class="lr-sub2" style="color:${aktive>=20?'var(--green)':aktive>=12?'var(--blue)':'var(--amber)'}">
+          ${aktive>=20?'🔥 Imponerende':aktive>=12?'👍 Bra':aktive>=5?'📈 Bygg videre':'🚀 Kom i gang'}
+        </div>
+      </div>
+    </div>`;}).join('');
+}
+
+function renderHistorikk(){
+  // Set default date
+  const datoEl=document.getElementById('dag-dato');
+  if(datoEl&&!datoEl.value) datoEl.value=todayStr();
+  renderDagListe();
+}
+
+
+function oppdaterFondVerdi(id){
+  const f=D.ok_fond.find(f=>f.id===id);
+  if(!f) return;
+  const ny=parseFloat(prompt(`Ny verdi for "${f.navn}" (kr):\nNåværende: ${Math.round(f.verdi)} kr`));
+  if(isNaN(ny)||ny<0) return;
+  const gammel=f.verdi;
+  f.verdi=ny;
+  f.sistOppdatert=todayStr();
+  if(!f.historikk) f.historikk=[];
+  f.historikk.push({dato:todayStr(),verdi:ny,endring:ny-gammel});
+  saveD();renderOkono();
+  showToast(`Oppdatert! ${ny>=gammel?'+':''}${fmtKr(ny-gammel)}`);
+}
+
+function leggTilFondInnskudd(id){
+  const f=D.ok_fond.find(f=>f.id===id);
+  if(!f) return;
+  const belop=parseFloat(prompt(`Legg inn i "${f.navn}" (kr):\nNåværende innskutt: ${Math.round(f.inn)} kr`));
+  if(isNaN(belop)||belop<=0) return;
+  f.inn=(f.inn||0)+belop;
+  f.verdi=(f.verdi||0)+belop;
+  f.sistOppdatert=todayStr();
+  if(!f.historikk) f.historikk=[];
+  f.historikk.push({dato:todayStr(),verdi:f.verdi,endring:belop,type:'innskudd'});
+  saveD();renderOkono();
+  // Also log in dagbok
+  if(!D.dagbok) D.dagbok=[];
+  D.dagbok.unshift({id:Date.now(),dato:todayStr(),kat:'fond',txt:`La inn ${fmtKr(belop)} i ${f.navn}`,belop:belop});
+  saveD();
+  showToast(`${fmtKr(belop)} lagt inn i ${f.navn} 📈`);
+}
+
+</script>
